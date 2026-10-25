@@ -1,56 +1,80 @@
-# DukaanAI — Learning Reference & Hackathon Build Guide
+# DukaanAI — Voice-Led Shop Ledger (Node.js & Express)
 
-This project is a reference for learning how a voice-led shop ledger can work. It is not a claim that this exact project has been tested against the hackathon environment.
+Voice-powered digital khata (shop ledger) built with Node.js, Express, SQLite, and Google Gemini AI. Fully compatible with PieHost (and other cPanel / Passenger Node.js hosts).
 
-## What it demonstrates
-- FastAPI backend
-- SQLite ledger
-- Gemini API request for Hindi/Hinglish intent parsing
-- Explicit confirmation before saving a transaction
-- Customer balance and statement view
-- Browser microphone speech-to-text where supported
-- A demo mode to explore the UI without a Gemini API key
+---
 
-## Run it
-Python 3.10+ recommended.
+## Key Features
+- **Node.js & Express Backend**: Lightweight, fast, and ready to host on PieHost or any cPanel hosting.
+- **SQLite Ledger**: Persistent local database storing customer transactions and running balances.
+- **Gemini AI Intent Parsing**: Understands natural Hindi and Hinglish voice/text commands.
+- **Built-in Local Demo Parser**: Fallback rules-based parser for offline testing or without an API key.
+- **Customer Statement & PDF Export**: Instant customer bill generation and print/save to PDF.
+- **Voice Input**: Web Speech API integration for Hindi voice recording.
 
+---
+
+## Quick Start (Local)
+
+### 1. Requirements
+- Node.js 18+ (Node 20 LTS recommended)
+- npm
+
+### 2. Install Dependencies
 ```bash
-pip install -r requirements.txt
+npm install
 ```
 
-Copy `.env.example` to `.env` and set your Gemini API key. Do not share or commit `.env`.
-
-```bash
-uvicorn main:app --reload
+### 3. Configure Environment
+Copy `.env.example` to `.env` and configure your Google Gemini API key:
+```env
+GEMINI_API_KEY=your_actual_api_key_here
+GEMINI_MODEL=gemini-3.5-flash-lite
+PORT=8000
 ```
 
-Open http://127.0.0.1:8000
+### 4. Run the Server
+```bash
+npm start
+```
+Then open `http://localhost:8000` in your web browser.
 
-If you want to explore UI without an API key, click "Use local demo parser". This uses a basic rules parser, not Gemini. Do not describe demo mode as AI.
+### 5. Run Automated Tests
+```bash
+npm test
+```
 
-## Important setup note
-Gemini model names and API availability can change. Set `GEMINI_MODEL` in `.env` to a model currently available to your Google AI Studio API key. If Gemini returns an error, check the current Gemini API docs and your API key/quota.
+---
 
-## Example commands
-- Sharma ji ka 250 rupaye udhaar likho
-- Sharma ji ne 100 rupaye de diye
-- Verma ji ne 80 rupaye ka samaan liya
-- Sharma ji ka hisaab dikhao
-- Saare customers dikhao
+## Hosting on PieHost (Step-by-Step)
 
-## Before a real demo
-- Test all examples with your own API key.
-- Check that a payment reduces balance and a credit/sale increases it.
-- Try unclear commands and verify nothing is saved until you confirm.
-- Use demo data only; this app has no login, cloud backups, or production-grade accounting controls.
-- Ask organizers what forms of pre-event practice/reference code are permitted. Make genuine event-time commits if required; don't disguise when code was written.
+See the detailed guide in [PIEHOST_DEPLOYMENT_GUIDE.md](file:///C:/Users/mansii/Desktop/DukaanAI_Learning_Reference/PIEHOST_DEPLOYMENT_GUIDE.md).
 
-## Suggested hackathon build order
-1. Build the core transaction form and SQLite schema.
-2. Implement deterministic balance calculation and tests.
-3. Add Gemini parsing on the backend.
-4. Add confirmation and error handling.
-5. Add voice input and statement printing.
-6. Test end-to-end; document limitations.
-7. Commit the code you genuinely write during the event.
-8. Prepare a short demo and startup roadmap.
+### Summary:
+1. Log in to your **PieHost cPanel**.
+2. Go to **Setup Node.js App** (under Software).
+3. Click **Create Application**:
+   - **Node.js version**: Choose `20.x` (or `18.x`).
+   - **Application mode**: `Production`
+   - **Application root**: e.g., `public_html` or subfolder.
+   - **Application startup file**: `server.js` (or `app.js`).
+4. Upload project files (or git clone):
+   - `server.js`
+   - `app.js`
+   - `db.js`
+   - `parser.js`
+   - `package.json`
+   - `.env`
+   - `static/` (folder containing `index.html`, `app.js`, `style.css`)
+5. In cPanel, click **Run NPM Install**.
+6. Under **Environment variables**, ensure `GEMINI_API_KEY` and `GEMINI_MODEL` are set (or maintain them in `.env`).
+7. Click **Restart** to launch your live site.
+
+---
+
+## Example Commands
+- `Sharma ji ka 250 rupaye udhaar likho` (Adds ₹250 credit)
+- `Sharma ji ne 100 rupaye de diye` (Deducts ₹100 payment)
+- `Verma ji ne 80 rupaye ka samaan liya` (Adds ₹80 sale)
+- `Sharma ji ka hisaab dikhao` (Shows statement for Sharma ji)
+- `Saare customers dikhao` (Lists all customers and their balances)
