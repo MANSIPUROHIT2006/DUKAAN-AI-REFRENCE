@@ -1,19 +1,21 @@
 # DukaanAI — Voice-Led Shop Ledger (Node.js & Express)
 
-Voice-powered digital khata (shop ledger) built with Node.js, Express, SQLite, and Google Gemini AI. Fully organized into separate `frontend/` and `backend/` directories, compatible with PieHost (and other cPanel / Passenger Node.js hosts).
+Voice-powered digital khata (shop ledger) built with Node.js, Express, SQLite, and Google Gemini AI. Fully organized into separate `frontend/` and `backend/` directories with full MERN-style developer workflows, compatible with PieHost (and other cPanel / Passenger Node.js hosts).
 
 ---
 
 ## Directory Structure
 ```text
 DukaanAI_Learning_Reference/
-├── frontend/                   # Client-side files
+├── frontend/                   # Frontend Client
 │   ├── index.html              # HTML user interface
 │   ├── app.js                  # Speech-to-text, UI logic, PDF statement generator
 │   ├── style.css               # Clean responsive styling
+│   ├── dev-server.js           # Frontend development server (port 3000)
+│   ├── package.json            # Frontend scripts
 │   └── README.md
-├── backend/                    # Node.js + Express API server
-│   ├── server.js               # Express application with REST endpoints
+├── backend/                    # Node.js + Express API Server
+│   ├── server.js               # Express application with REST endpoints (port 8000)
 │   ├── app.js                  # Passenger entry-point alias
 │   ├── db.js                   # SQLite database & transaction logic
 │   ├── parser.js               # Gemini AI & rule-based parser
@@ -22,33 +24,40 @@ DukaanAI_Learning_Reference/
 │   ├── package.json            # Backend dependencies
 │   ├── .env                    # Gemini API credentials
 │   └── README.md
+├── start.bat                   # One-click Windows runner
 ├── PIEHOST_DEPLOYMENT_GUIDE.md # Complete PieHost deployment instructions
-└── package.json                # Root scripts to run both seamlessly
+└── package.json                # Root MERN concurrently scripts
 ```
 
 ---
 
-## Quick Start (Local)
+## Development (MERN-Style Workflow)
 
-### 1. Requirements
-- Node.js 18+ (Node 20 LTS recommended)
-- npm
-
-### 2. Install Dependencies
+### 1. Run Both Frontend & Backend Concurrently (Root)
+From the root directory:
 ```bash
-npm install
+npm run dev
 ```
+- **Backend API**: `http://localhost:8000`
+- **Frontend App**: `http://localhost:3000` (automatically communicates with backend at `http://localhost:8000`)
 
-### 3. Run Automated Tests
-```bash
-npm test
-```
+### 2. Run Individually
+- **Frontend only**:
+  ```bash
+  cd frontend
+  npm run dev
+  ```
+- **Backend only**:
+  ```bash
+  cd backend
+  npm run dev
+  ```
 
-### 4. Start the Application
+### 3. Production / PieHost Run
 ```bash
 npm start
 ```
-Open **`http://localhost:8000`** in your browser.
+Starts `backend/server.js`, serving the complete application and static frontend at `http://localhost:8000` (or `process.env.PORT`).
 
 ---
 

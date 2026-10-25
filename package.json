@@ -2,10 +2,12 @@
   "name": "dukaanai",
   "version": "1.0.0",
   "description": "DukaanAI - Voice-powered shop ledger with Node.js, Express, and Gemini AI",
-  "main": "server.js",
+  "main": "backend/server.js",
   "scripts": {
     "start": "node backend/server.js",
-    "dev": "node backend/server.js",
+    "dev": "concurrently -n \"backend,frontend\" -c \"blue,green\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
     "test": "node backend/test.js"
   },
   "engines": {
@@ -16,7 +18,8 @@
     "shop-ledger",
     "express",
     "piehost",
-    "gemini"
+    "gemini",
+    "mern"
   ],
   "author": "",
   "license": "ISC",
@@ -25,5 +28,8 @@
     "dotenv": "^18.0.9",
     "express": "^5.3.0",
     "sqlite3": "^6.0.1"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
   }
 }

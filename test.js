@@ -1,9 +1,12 @@
 const http = require('http');
 
 async function runTests() {
-  const { app, server } = require('./server');
+  const { app, server } = require('./backend/server');
+  if (!server.listening) {
+    await new Promise(resolve => server.once('listening', resolve));
+  }
   const address = server.address();
-  const port = address.port;
+  const port = address ? address.port : (process.env.PORT || 8000);
   const baseUrl = `http://127.0.0.1:${port}`;
   console.log(`Testing server running at ${baseUrl}...`);
 

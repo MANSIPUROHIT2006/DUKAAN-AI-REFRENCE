@@ -1,9 +1,13 @@
 {
   "name": "dukaanai-frontend",
   "version": "1.0.0",
-  "description": "DukaanAI Frontend",
+  "description": "DukaanAI Frontend Client",
+  "main": "dev-server.js",
   "scripts": {
-    "dev": "node ../backend/server.js",
-    "start": "node ../backend/server.js"
+    "dev": "node dev-server.js",
+    "start": "node dev-server.js"
+  },
+  "dependencies": {
+    "express": "^5.3.0"
   }
 }
