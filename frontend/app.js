@@ -1,6 +1,22 @@
 // DukaanAI Frontend Client Logic
-// If frontend is hosted separately from backend, configure window.__API_BASE__ = 'https://your-backend.com'
-const API_BASE = window.__API_BASE__ || '';
+// Smart API Detection:
+// If opened via Live Server (port 5500), Vite (port 5173), file://, or any other port than 8000,
+// it automatically connects to the backend at http://localhost:8000.
+// When hosted on PieHost / production or served by Express, it uses relative '/api'.
+function getApiBase() {
+  if (typeof window !== 'undefined' && window.__API_BASE__ !== undefined) {
+    return window.__API_BASE__;
+  }
+  if (typeof window !== 'undefined') {
+    const loc = window.location;
+    if (loc.protocol === 'file:' || (loc.port && loc.port !== '8000')) {
+      return 'http://localhost:8000';
+    }
+  }
+  return '';
+}
+const API_BASE = getApiBase();
+console.log('[DukaanAI] Backend API endpoint:', API_BASE ? API_BASE : '(Same origin / Relative)');
 
 const $ = id => document.getElementById(id);
 let last = null;

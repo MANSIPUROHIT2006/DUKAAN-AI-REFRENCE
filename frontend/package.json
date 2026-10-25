@@ -1,0 +1,9 @@
+{
+  "name": "dukaanai-frontend",
+  "version": "1.0.0",
+  "description": "DukaanAI Frontend",
+  "scripts": {
+    "dev": "node ../backend/server.js",
+    "start": "node ../backend/server.js"
+  }
+}

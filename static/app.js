@@ -1,3 +1,23 @@
+// DukaanAI Frontend Client Logic
+// Smart API Detection:
+// If opened via Live Server (port 5500), Vite (port 5173), file://, or any other port than 8000,
+// it automatically connects to the backend at http://localhost:8000.
+// When hosted on PieHost / production or served by Express, it uses relative '/api'.
+function getApiBase() {
+  if (typeof window !== 'undefined' && window.__API_BASE__ !== undefined) {
+    return window.__API_BASE__;
+  }
+  if (typeof window !== 'undefined') {
+    const loc = window.location;
+    if (loc.protocol === 'file:' || (loc.port && loc.port !== '8000')) {
+      return 'http://localhost:8000';
+    }
+  }
+  return '';
+}
+const API_BASE = getApiBase();
+console.log('[DukaanAI] Backend API endpoint:', API_BASE ? API_BASE : '(Same origin / Relative)');
+
 const $ = id => document.getElementById(id);
 let last = null;
 
@@ -27,7 +47,7 @@ function msg(t, isError = false) {
   m.style.color = isError ? '#c92a2a' : 'var(--green)';
 }
 
-async function apiInterpret(path) {
+async function apiInterpret(endpoint) {
   const command = $('command').value.trim();
   if (!command) {
     msg('Type or speak a command first.', true);
@@ -35,7 +55,7 @@ async function apiInterpret(path) {
   }
   msg('Working…');
   try {
-    const r = await fetch(path, {
+    const r = await fetch(`${API_BASE}${endpoint}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ command })
@@ -212,7 +232,7 @@ async function save() {
 
   msg('Saving transaction…');
   try {
-    const r = await fetch('/api/transactions', {
+    const r = await fetch(`${API_BASE}/api/transactions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -292,7 +312,7 @@ async function loadStatementDirectly(customerName) {
   $('command').value = `${customerName} ka hisaab dikhao`;
   msg(`Loading statement for ${customerName}…`);
   try {
-    const r = await fetch(`/api/customer/${encodeURIComponent(customerName)}/statement`);
+    const r = await fetch(`${API_BASE}/api/customer/${encodeURIComponent(customerName)}/statement`);
     const d = await r.json();
     if (!r.ok) throw new Error(d.detail || 'Could not load statement');
     render({
@@ -309,9 +329,9 @@ async function loadStatementDirectly(customerName) {
 async function refresh() {
   try {
     const [csRes, txRes, allRes] = await Promise.all([
-      fetch('/api/customers'),
-      fetch('/api/transactions?limit=12'),
-      fetch('/api/transactions?limit=200')
+      fetch(`${API_BASE}/api/customers`),
+      fetch(`${API_BASE}/api/transactions?limit=12`),
+      fetch(`${API_BASE}/api/transactions?limit=200`)
     ]);
 
     const cs = await csRes.json();
@@ -357,7 +377,7 @@ $('refresh').onclick = refresh;
 $('clear').onclick = async () => {
   if (confirm('Delete all demo transactions? This cannot be undone.')) {
     try {
-      await fetch('/api/demo-data', { method: 'DELETE' });
+      await fetch(`${API_BASE}/api/demo-data`, { method: 'DELETE' });
       await refresh();
       $('result').classList.add('hidden');
       msg('All demo data cleared.');
@@ -368,7 +388,7 @@ $('clear').onclick = async () => {
 };
 
 // Check backend health on load
-fetch('/api/health')
+fetch(`${API_BASE}/api/health`)
   .then(r => r.json())
   .then(h => {
     const statusElem = $('status');
