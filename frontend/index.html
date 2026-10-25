@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DukaanAI — Voice-Powered Shop Ledger</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="logo">द</div>
+    <div>
+      <b>DukaanAI</b>
+      <small>Voice-powered digital khata</small>
+    </div>
+    <span id="status" class="status">Checking…</span>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <small>HINDI / HINGLISH • SHOP LEDGER</small>
+        <h1>Bolkar rakho.<br><em>Poora hisaab.</em></h1>
+        <p>Speak naturally. Review the interpreted transaction. Confirm before saving.</p>
+      </div>
+      <div class="micart">🎙</div>
+    </section>
+
+    <section class="panel">
+      <div class="section-title">
+        <div>
+          <small>VOICE ASSISTANT</small>
+          <h2>What should I do?</h2>
+        </div>
+        <span class="tag">Gemini AI</span>
+      </div>
+
+      <div class="inputrow">
+        <input id="command" placeholder="Sharma ji ka 250 rupaye udhaar likho">
+        <button id="mic">🎙 Speak</button>
+      </div>
+
+      <div class="examples">
+        <button>Sharma ji ka 250 rupaye udhaar likho</button>
+        <button>Sharma ji ne 100 rupaye de diye</button>
+        <button>Sharma ji ka hisaab dikhao</button>
+        <button>Saare customers dikhao</button>
+      </div>
+
+      <div class="actions">
+        <button id="ask" class="primary">Ask Gemini →</button>
+        <button id="demo" class="secondary">Use local demo parser</button>
+      </div>
+
+      <p class="hint">Demo parser is rules-based and is NOT AI. Review all fields before saving.</p>
+      <p id="message"></p>
+      <div id="result" class="result hidden"></div>
+    </section>
+
+    <section class="stats">
+      <div>
+        <small>Customers</small>
+        <strong id="cc">0</strong>
+      </div>
+      <div>
+        <small>Net outstanding</small>
+        <strong id="bal">₹0</strong>
+      </div>
+      <div>
+        <small>Transactions</small>
+        <strong id="tc">0</strong>
+      </div>
+    </section>
+
+    <section class="columns">
+      <div class="panel">
+        <div class="section-title">
+          <div>
+            <small>LEDGER</small>
+            <h2>Customer khata</h2>
+          </div>
+          <button id="refresh" class="secondary">Refresh</button>
+        </div>
+        <div id="customers"></div>
+      </div>
+
+      <div class="panel">
+        <small>RECENT ACTIVITY</small>
+        <h2>Transactions</h2>
+        <div id="transactions"></div>
+      </div>
+    </section>
+
+    <section class="notice">
+      <b>Learning reference</b>
+      <p>Not production accounting software. No login or cloud backup. Do not enter real customer financial information. Confirm hackathon rules before using pre-written code.</p>
+      <button id="clear">Clear demo data</button>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,3 +1,2 @@
-// Entry point alias for cPanel / Phusion Passenger / PieHost
-// Both server.js and app.js can be specified as the startup file.
-module.exports = require('./server.js');
+// Root entry point delegating to backend/server.js
+module.exports = require('./backend/server.js');

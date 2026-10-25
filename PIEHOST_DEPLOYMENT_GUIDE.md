@@ -1,104 +1,108 @@
 # PieHost Deployment Guide for DukaanAI
 
-This guide details how to deploy your DukaanAI Node.js & Express application on **PieHost** (cPanel / CloudLinux Node.js hosting).
+DukaanAI is organized into two clean, self-contained directories:
+- `frontend/`: The client application (HTML, CSS, JavaScript).
+- `backend/`: The Node.js Express server, SQLite database, and Gemini AI parsing logic.
 
 ---
 
-## 1. Files Needed on PieHost
-Prepare a zip file or upload the following files to your PieHost application directory:
+## Project Structure Overview
 
 ```text
-├── server.js               (Main Express server)
-├── app.js                  (Entry point alias for Passenger)
-├── db.js                   (SQLite database layer)
-├── parser.js               (Gemini AI & demo parser)
-├── package.json            (Dependencies & start scripts)
-├── dukaanai.db             (SQLite database file, or let it auto-create)
-├── .env                    (Environment variables with your API key)
-└── static/
-    ├── index.html          (Main frontend)
-    ├── app.js              (Frontend client logic)
-    └── style.css           (Styling)
+DukaanAI_Learning_Reference/
+├── frontend/
+│   ├── index.html              # Web interface
+│   ├── app.js                  # Frontend client logic & speech recognition
+│   ├── style.css               # Styling
+│   └── README.md
+├── backend/
+│   ├── server.js               # Main Express application
+│   ├── app.js                  # Passenger entry-point alias
+│   ├── db.js                   # SQLite database manager
+│   ├── parser.js               # Gemini AI & demo parser
+│   ├── dukaanai.db             # Database file
+│   ├── package.json            # Dependencies (express, sqlite3, dotenv, cors)
+│   ├── test.js                 # Automated test suite
+│   ├── .env                    # Environment variables
+│   └── README.md
+├── PIEHOST_DEPLOYMENT_GUIDE.md
+└── README.md
 ```
-
-> [!NOTE]
-> Do NOT upload `node_modules` or `.venv`. The host will install clean production modules for its Linux environment when you click **Run NPM Install**.
 
 ---
 
-## 2. Setup Node.js Application in PieHost cPanel
+## Deployment Option 1: Unified Deployment (Simplest & Recommended)
 
-1. **Log in to PieHost cPanel**:
-   Navigate to your cPanel dashboard provided by PieHost.
+In this setup, the Express backend automatically serves the `frontend/` folder, so you only need to run a single Node.js application in PieHost.
 
-2. **Open Setup Node.js App**:
-   Under the **Software** section, click **Setup Node.js App**.
+### Step 1: Open PieHost cPanel
+Log in to your PieHost cPanel account.
 
-3. **Create Application**:
-   Click the **Create Application** button and configure:
-   - **Node.js version**: Select `20.x` (or `18.x`).
+### Step 2: Create Node.js Application
+1. In cPanel, find and click **Setup Node.js App** (under Software).
+2. Click **Create Application**:
+   - **Node.js version**: `20.x` (or `18.x`).
    - **Application mode**: `Production`.
-   - **Application root**: Path where your files reside (e.g. `dukaanai` or `public_html`).
-   - **Application URL**: Your domain or subdomain (e.g. `dukaan.yourdomain.com` or `yourdomain.com`).
-   - **Application startup file**: Enter `server.js` (or `app.js`).
+   - **Application root**: `dukaanai` (or `public_html`).
+   - **Application URL**: Your domain (e.g., `yourdomain.com`).
+   - **Application startup file**: `backend/server.js` (or `server.js`).
+3. Click **Create**.
 
-4. Click **Create** in the top right corner.
+### Step 3: Upload Project Files
+Using **cPanel File Manager** or FTP, upload:
+- The entire `backend/` folder
+- The entire `frontend/` folder
+- `package.json`
+- `.env`
+
+*(Do NOT upload `node_modules` or `.venv`)*
+
+### Step 4: Install Dependencies
+1. In **Setup Node.js App**, open your application.
+2. In the **Detected configuration files** section, click **Run NPM Install**.
+   - This installs `express`, `sqlite3`, `dotenv`, and `cors`.
+
+### Step 5: Configure Environment Variables
+Under **Environment variables** in the cPanel Node.js App UI (or in your `.env` file):
+- `GEMINI_API_KEY`: Your Google Gemini API key
+- `GEMINI_MODEL`: `gemini-3.5-flash-lite`
+
+### Step 6: Restart & Test
+1. Click **Restart Application** in cPanel.
+2. Visit your domain in your browser.
+3. You will see the DukaanAI interface with a green `● Gemini Active` badge!
 
 ---
 
-## 3. Upload Your Files
-1. Open **cPanel File Manager**.
-2. Go to the directory you selected in **Application root** (e.g., `dukaanai` or `public_html`).
-3. Upload `server.js`, `app.js`, `db.js`, `parser.js`, `package.json`, `.env`, and the `static` folder.
+## Deployment Option 2: Separate Frontend & Backend
+
+If you prefer hosting the frontend as static files in `public_html` and the backend under a subdomain (e.g. `api.yourdomain.com`) or subpath:
+
+1. **Deploy Backend**:
+   - Set **Application root** in cPanel to `backend`.
+   - Set **Application startup file** to `server.js`.
+   - Click **Run NPM Install** and set your `GEMINI_API_KEY`.
+2. **Deploy Frontend**:
+   - Upload the contents of `frontend/` (`index.html`, `app.js`, `style.css`) to `public_html`.
+   - In `frontend/index.html` (or top of `frontend/app.js`), specify your backend URL:
+     ```html
+     <script>
+       window.__API_BASE__ = 'https://api.yourdomain.com';
+     </script>
+     ```
+   - All frontend requests will automatically target your backend API.
 
 ---
 
-## 4. Install Dependencies
-1. Return to **Setup Node.js App** in cPanel.
-2. Edit your created application.
-3. In the **Detected configuration files** section, you will see `package.json`.
-4. Click the **Run NPM Install** button.
-   - Wait for it to complete. It will install `express`, `sqlite3`, `dotenv`, and `cors`.
+## Testing Locally Before Deploying
 
----
+```bash
+# From the root directory:
+npm test       # Runs all automated API tests
+npm start      # Starts server at http://localhost:8000
 
-## 5. Configure Environment Variables
-You have two easy ways:
-
-### Option A: Via cPanel UI (Recommended)
-In the **Setup Node.js App** page, scroll down to **Environment variables**:
-- **Name**: `GEMINI_API_KEY` | **Value**: `your_gemini_api_key`
-- **Name**: `GEMINI_MODEL` | **Value**: `gemini-3.5-flash-lite` (or your chosen model)
-Click **Add variable** and then **Save**.
-
-### Option B: Via `.env` file
-Ensure your `.env` file in the application directory contains:
-```env
-GEMINI_API_KEY=your_gemini_api_key_here
-GEMINI_MODEL=gemini-3.5-flash-lite
-PORT=8000
+# Or from the backend directory:
+cd backend
+npm test
+npm start
 ```
-
----
-
-## 6. Restart & Verify
-1. Click **Restart Application** at the top of the Node.js application management page.
-2. Click **Open** to visit your site in the browser.
-3. Look at the top right status badge:
-   - If it shows `● Gemini Active`, your Gemini API key is working.
-   - If it shows `○ Demo Mode (No Key)`, check your `.env` or environment variables in cPanel.
-4. Try speaking or clicking:
-   - `Sharma ji ka 250 rupaye udhaar likho`
-   - Click **Confirm & save**
-   - Click **Bill** to view the statement.
-
----
-
-## Troubleshooting on PieHost
-
-- **503 Service Unavailable / Passenger Error**:
-  Check `stderr.log` inside your application root. Ensure `server.js` exists and dependencies were installed with "Run NPM Install".
-- **Port issue**:
-  `server.js` automatically uses `process.env.PORT` which Phusion Passenger assigns dynamically. Do NOT hardcode a fixed port like 8000 when running under Passenger.
-- **SQLite permissions**:
-  Ensure the directory containing `dukaanai.db` has write permissions (`0755` or `0775`) so the web server process can create and update the database file.
